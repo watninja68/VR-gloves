@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSS Loading Bar</title>
+    <style>
+        body {
+            height: 100vh;
+            display: flex;
+            background-color: rgba(34, 51, 102, 0.8); /* Dark, transparent background */
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+            font-family: 'Georgia', serif;
+        }
+
+        h1 {
+            position: absolute;
+            top: 2rem;
+            left: 2rem;
+            color: #66cccc; /* Muted peacock color for the title */
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
+        }
+
+        .loader {
+            height: 200px;
+            position: relative;
+            width: 200px;
+            box-shadow: 1px 1px 30px rgba(0, 0, 0, 0.5);
+            border-radius: 50%;
+            background-color: rgba(0, 0, 0, 0.3); /* Transparent background */
+        }
+
+        span {
+            height: 100%;
+            width: 100%;
+            display: block;
+            box-sizing: border-box;
+            border-radius: 50%;
+            border-left: 5px solid orange;
+            border-right: 5px solid springgreen;
+            border-top: 5px solid blue;
+            border-bottom: 5px solid white;
+            animation: spin 5s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            50% {
+                transform: rotate(90deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>CSS Loading Bar</h1>
+    <div class="loader">
+        <span></span>
+    </div>
+</body>
+</html>

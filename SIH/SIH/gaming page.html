@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gaming with Multipurpose Gloves</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(45deg, #000033, #330033);
+            color: #e0e0e0;
+            overflow: hidden;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            animation: glowText 2s infinite alternate;
+        }
+
+        .game-scene {
+            position: relative;
+            width: 400px;
+            height: 300px;
+            background-color: rgba(0, 0, 0, 0.5);
+            border: 2px solid #66cccc;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .player {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            background-color: #66cccc;
+            border-radius: 50%;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            transition: all 0.3s ease;
+        }
+
+        .enemy {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background-color: #ff6666;
+            border-radius: 50%;
+            top: -30px;
+            animation: fallDown 3s infinite linear;
+        }
+
+        @keyframes glowText {
+            from { text-shadow: 0 0 5px #66cccc, 0 0 10px #66cccc, 0 0 15px #66cccc; }
+            to { text-shadow: 0 0 10px #66cccc, 0 0 20px #66cccc, 0 0 30px #66cccc; }
+        }
+
+        @keyframes fallDown {
+            from { top: -30px; }
+            to { top: 100%; }
+        }
+
+        .back-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            padding: 10px 20px;
+            font-size: 1em;
+            color: white;
+            background-color: #330033;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .back-button:hover {
+            background-color: #66cccc;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Gaming with Multipurpose Gloves</h1>
+        <div class="game-scene">
+            <div class="player"></div>
+            <div class="enemy"></div>
+        </div>
+    </div>
+    <button class="back-button" onclick="window.location.href='index.html'">Back to Menu</button>
+
+    <script>
+        const player = document.querySelector('.player');
+        const gameScene = document.querySelector('.game-scene');
+
+        gameScene.addEventListener('mousemove', (e) => {
+            const rect = gameScene.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            player.style.left = `${Math.min(Math.max(x, 25), 375)}px`;
+        });
+    </script>
+</body>
+</html>

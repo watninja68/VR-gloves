@@ -1,0 +1,153 @@
+import socket
+import time
+
+import pyautogui
+
+
+def scroll_slow_down(Accel):
+    #Accel = 1.5
+    tdelay = Accel*0.5
+    sdisp = int(-1 * (Accel*15))
+    for i in range(0,20):
+        pyautogui.vscroll(sdisp)  # Fast and longer scroll up
+        time.sleep(tdelay)
+
+def scroll_slow_up(Accel):
+    #Accel = 1.5
+    tdelay = Accel*0.5
+    sdisp = int(Accel*15)
+    for i in range(0,20):
+        pyautogui.vscroll(sdisp)  # Fast and longer scroll up
+        time.sleep(tdelay)
+
+def scroll_fast_down(Accel):
+    #Accel = 1.5
+    tdelay = Accel*0.025
+    sdisp = int(-1 * (Accel*25))
+    for i in range(0,20):
+        pyautogui.vscroll(sdisp)  # Fast and longer scroll up
+        time.sleep(tdelay)
+
+def scroll_fast_up(Accel):
+    #Accel = 1.5
+    tdelay = Accel*0.025
+    sdisp = int(Accel*25)
+    for i in range(0,20):
+        pyautogui.vscroll(sdisp)  # Fast and longer scroll up
+        time.sleep(tdelay)
+
+# Independent functions for movement
+def move_left(Accel):
+    freq = int(Accel*3)
+    tdelay = 1/Accel
+    for i in range(0,freq):
+        pyautogui.press('left')
+        time.sleep(tdelay)
+
+def move_right(Accel):
+    freq = int(Accel*3)
+    tdelay = 1/Accel
+    for i in range(0,freq):
+        pyautogui.press('right')
+        time.sleep(tdelay)
+
+# Independent functions for zooming
+def zoom_in(Accel):
+    #Accel = 1.5
+    tdelay = 1/Accel
+    pyautogui.hotkey('ctrl', '+')  # Zoom in
+    time.sleep(tdelay)
+    pyautogui.hotkey('ctrl', '+')  # Zoom in
+
+def zoom_out(Accel):
+    #Accel = 1.5
+    tdelay = 1/Accel
+    pyautogui.hotkey('ctrl', '-')  # Zoom in
+    time.sleep(tdelay)
+    pyautogui.hotkey('ctrl', '-')  # Zoom in
+
+def open_file(file_position):
+    pyautogui.doubleClick(file_position)  # Double-click on the file at the given position
+    time.sleep(2)
+
+def close_file():
+    pyautogui.hotkey('ctrl', 'w')  # Close the file (works in many applications)
+    time.sleep(2)  # Wait for the file to close
+
+file_position = (607,368)  # (x, y) coordinates of the file
+
+def DetectGesture(pitchDiff1,pitchDiff2,pitchDiff3,yawDiff1,yawDiff2,yawDiff3,rollDiff1,rollDiff2,rollDiff3):
+    valChange = 2.5
+    valNoChangeThreshold = 1.5
+    if(pitchDiff1<=(-1*valChange) and pitchDiff2 <= (-1*valChange) and pitchDiff3 <=(-1*valChange)):
+        move_right(max(-1*pitchDiff1,-1*pitchDiff2,-1*pitchDiff3))
+        print("move_left")
+    elif(pitchDiff1 >=valChange and pitchDiff2 <= (-1*valChange) and yawDiff1 < valChange and rollDiff1 < valChange and yawDiff2 < valChange and rollDiff2 < valChange):
+        print("zoom_in")
+        zoom_in(max(pitchDiff1,-1*pitchDiff2))
+    elif(pitchDiff2 >= valChange and pitchDiff1 <= (-1*valChange) and yawDiff1 < valChange and rollDiff1 < valChange and yawDiff2 < valChange and rollDiff2 < valChange):
+        print("zoom_out")
+        zoom_out(max(-1*pitchDiff1,pitchDiff2))
+    elif(pitchDiff1 >= valChange and yawDiff1 < valNoChangeThreshold and rollDiff1 < valNoChangeThreshold):
+        scroll_fast_down(pitchDiff1)
+        print("scroll down")
+    elif(pitchDiff1 <= (-1*valChange) and yawDiff1 < valNoChangeThreshold and rollDiff1 < valNoChangeThreshold):
+        scroll_fast_up(-1*pitchDiff1)
+        print("scroll up")
+    elif(pitchDiff1>=valChange and pitchDiff2 >=valChange and pitchDiff3 >=valChange):
+        move_left(max(pitchDiff1,pitchDiff2,pitchDiff3))
+        print("move right")
+
+def decode(ss: str):
+    aa = ss.split(":")
+    temp = aa[0]
+    aa = [float(x) for x in aa[1].split(",")]
+    aa.append(temp)
+    
+    return aa
+
+if _name_ == "_main_":
+    #s1 = "Middle:0.60,-0.20,0.00"
+    #s2 = "Middle:3.60,1,0.00"
+    #s3 = "Middle:0.60,-0.20,0.00"
+
+    server_ip = '0.0.0.0'  # Listen on all interfaces
+    port = 8080
+
+    # Create a socket object
+    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+    # Bind to the port
+    server_socket.bind((server_ip, port))
+
+    # Start listening for connections (max 5 queued connections)
+    server_socket.listen(5)
+    print("Server listening on {}:{}".format(server_ip, port))
+
+    flag = False
+    count = 0
+    decoded = []
+    d1 = {"Thumb":[] ,"Middle": [], "Point":[]}
+    time.sleep(1)
+    while(True):
+        if flag == False :
+            count += 1
+            if count%4 == 0:
+                flag = True
+                count = 0
+            continue
+            
+        # Establish a connection with a client
+        client_socket, addr = server_socket.accept()
+        # Receive the data
+        data = client_socket.recv(1024).decode('utf-8')
+        # Close the connection
+        client_socket.close()
+        s1 = data
+        # time.sleep(1)
+        dtemp = decode(s1)
+        if(dtemp[3] != "Main"):
+            d1[dtemp[3]] = dtemp
+            if(d1["Thumb"] != [] and d1["Middle"] != [] and d1["Point"] != []):
+                print(d1)
+                DetectGesture(d1["Thumb"][0],d1["Middle"][0],d1["Point"][0],d1["Thumb"][1],d1["Middle"][1],d1["Point"][1],d1["Thumb"][2],d1["Middle"][2],d1["Point"][2])
